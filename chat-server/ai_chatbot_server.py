@@ -9,9 +9,11 @@ import json
 import os
 import requests
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
+CORS(app)
 
 # ============ 配置 ============
 DEEPSEEK_KEY = os.environ.get("DEEPSEEK_KEY", "sk-your-key-here")
