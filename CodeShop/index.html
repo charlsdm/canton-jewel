@@ -1,580 +1,501 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>阿德代码商店</title>
-<style>
-  :root {
-    --bg: #faf9f6;
-    --card: #fff;
-    --ink: #1a1a1a;
-    --muted: #888;
-    --accent: #07c160;
-    --blue: #1677ff;
-    --orange: #e67e22;
-    --border: #e8e5df;
-    --radius: 12px;
-    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.06);
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
-    background: var(--bg); color: var(--ink); line-height: 1.7;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  nav {
-    background: #fff; border-bottom: 1px solid var(--border);
-    padding: 14px 24px; text-align: center; position: sticky; top: 0; z-index: 100;
-  }
-  nav .logo { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.5px; }
-
-  .hero {
-    text-align: center; padding: 48px 20px 32px; max-width: 600px; margin: 0 auto;
-  }
-  .hero h1 { font-size: 1.75rem; margin-bottom: 8px; }
-  .hero p { color: var(--muted); font-size: .9375rem; }
-
-  /* ── 模块切换标签 ── */
-  .tab-bar {
-    display: flex; justify-content: center; gap: 0;
-    max-width: 400px; margin: 0 auto 32px; padding: 0 20px;
-  }
-  .tab-btn {
-    flex: 1; padding: 12px 24px; border: 1.5px solid var(--border);
-    background: #fff; font-size: .95rem; font-weight: 600; cursor: pointer;
-    transition: all .15s; font-family: inherit; color: var(--muted);
-  }
-  .tab-btn:first-child { border-radius: 50px 0 0 50px; }
-  .tab-btn:last-child  { border-radius: 0 50px 50px 0; }
-  .tab-btn.active {
-    background: var(--ink); color: #fff; border-color: var(--ink);
-    position: relative; z-index: 1;
-  }
-
-  /* ── 内容区 ── */
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-
-  .products { max-width: 960px; margin: 0 auto; padding: 0 20px 60px; }
-
-  .product-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); box-shadow: var(--shadow);
-    padding: 28px; margin-bottom: 24px;
-    display: flex; gap: 24px; align-items: flex-start;
-  }
-  .product-img {
-    width: 260px; height: 180px; border-radius: 8px; object-fit: cover;
-    background: #f0f0f0; flex-shrink: 0;
-  }
-  .product-info { flex: 1; }
-  .product-info h2 { font-size: 1.2rem; margin-bottom: 6px; }
-  .product-info .desc { color: var(--muted); font-size: .9rem; margin-bottom: 12px; }
-  .product-info .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-  .product-info .tag {
-    background: #f0f0f0; padding: 3px 10px; border-radius: 20px;
-    font-size: .75rem; color: var(--muted);
-  }
-
-  .price-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .price { font-size: 1.5rem; font-weight: 700; color: #e74c3c; }
-  .price-old { font-size: .875rem; color: #bbb; text-decoration: line-through; }
-
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 24px; border-radius: 50px; font-size: .9rem; font-weight: 600;
-    cursor: pointer; border: none; transition: all .15s; text-decoration: none;
-    font-family: inherit;
-  }
-  .btn-buy { background: var(--ink); color: #fff; }
-  .btn-buy:hover { opacity: .85; transform: translateY(-1px); }
-  .btn-cn  { background: var(--accent); color: #fff; }
-  .btn-cn:hover  { opacity: .88; transform: translateY(-1px); }
-  .btn-ovs { background: #5865f2; color: #fff; }
-  .btn-ovs:hover { opacity: .88; transform: translateY(-1px); }
-  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-
-  .video-wrap { margin-top: 14px; }
-  .video-wrap summary {
-    cursor: pointer; color: var(--blue); font-size: .875rem; font-weight: 500;
-  }
-  .video-wrap video {
-    width: 100%; max-width: 480px; border-radius: 8px; margin-top: 8px;
-  }
-
-  /* ── 接单模块 ── */
-  .order-section { max-width: 700px; margin: 0 auto; padding: 0 20px 60px; }
-
-  .order-intro {
-    text-align: center; margin-bottom: 32px;
-  }
-  .order-intro h2 { font-size: 1.3rem; margin-bottom: 6px; }
-  .order-intro p  { color: var(--muted); font-size: .9375rem; }
-
-  .skill-cards {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 14px; margin-bottom: 32px;
-  }
-  .skill-card {
-    background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 18px; text-align: center; transition: all .15s;
-  }
-  .skill-card:hover { border-color: var(--orange); }
-  .skill-card .icon { font-size: 1.75rem; margin-bottom: 6px; }
-  .skill-card h4 { font-size: .9375rem; margin-bottom: 2px; }
-  .skill-card p  { font-size: .8125rem; color: var(--muted); }
-
-  .order-form-card {
-    background: #fff; border: 2px solid var(--orange);
-    border-radius: var(--radius); box-shadow: var(--shadow);
-    padding: 32px 28px;
-  }
-  .order-form-card h3 { margin-bottom: 20px; text-align: center; }
-  .form-group { margin-bottom: 16px; }
-  .form-group label {
-    display: block; font-size: .875rem; font-weight: 600;
-    margin-bottom: 6px;
-  }
-  .form-group input, .form-group textarea, .form-group select {
-    width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
-    border-radius: 8px; font-size: .9375rem; font-family: inherit;
-    transition: border-color .15s; background: #fafafa;
-  }
-  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-    outline: none; border-color: var(--orange); background: #fff;
-  }
-  .form-group textarea { resize: vertical; min-height: 100px; }
-
-  .btn-submit {
-    width: 100%; background: var(--orange); color: #fff;
-    padding: 14px; margin-top: 8px;
-  }
-  .btn-submit:hover { opacity: .9; }
-
-  .order-contact-info {
-    margin-top: 20px; text-align: center; font-size: .875rem; color: var(--muted);
-    padding-top: 16px; border-top: 1px solid var(--border);
-  }
-  .order-contact-info strong { color: var(--ink); }
-
-  /* ── 购买弹窗 ── */
-  .overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45);
-    z-index: 200; justify-content: center; align-items: center;
-    padding: 20px;
-  }
-  .overlay.show { display: flex; }
-  .modal {
-    background: #fff; border-radius: var(--radius); padding: 32px 28px;
-    max-width: 420px; width: 100%; text-align: center; position: relative;
-    animation: fadeUp .25s ease;
-  }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } }
-  .modal-close {
-    position: absolute; top: 12px; right: 16px;
-    background: none; border: none; font-size: 1.5rem; cursor: pointer;
-    color: #bbb; line-height: 1;
-  }
-  .modal-close:hover { color: var(--ink); }
-
-  .modal h3 { margin-bottom: 4px; }
-  .modal .order-id {
-    background: #f5f5f5; padding: 8px 16px; border-radius: 6px;
-    font-family: monospace; font-size: 1.1rem; letter-spacing: 2px;
-    display: inline-block; margin: 12px 0;
-  }
-  .modal .warning {
-    color: #e67e22; font-size: .8125rem; margin-bottom: 16px;
-  }
-  .qr-row { display: flex; gap: 16px; justify-content: center; margin-bottom: 8px; }
-  .qr-box { text-align: center; }
-  .qr-box img { width: 140px; height: 140px; border: 1px solid var(--border); border-radius: 8px; }
-  .qr-box p { font-size: .8125rem; margin-top: 4px; font-weight: 600; }
-
-  .modal .contact {
-    margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);
-    font-size: .875rem; color: var(--muted);
-  }
-  .modal .contact strong { color: var(--ink); }
-
-  footer {
-    text-align: center; padding: 32px 20px; border-top: 1px solid var(--border);
-    font-size: .8125rem; color: var(--muted);
-  }
-
-  @media (max-width: 640px) {
-    .product-card { flex-direction: column; }
-    .product-img { width: 100%; height: 200px; }
-    .qr-row { flex-direction: column; align-items: center; }
-    .skill-cards { grid-template-columns: repeat(2, 1fr); }
-  }
-</style>
-</head>
-<body>
-
-<nav><div class="logo">🛒 阿德代码商店</div></nav>
-
-<section class="hero">
-  <h1>买源码，接定制，都在这</h1>
-  <p>现成工具直接买，特殊需求找我写。Unity / Python / 小程序 / AI工具。</p>
-</section>
-
-<!-- ═══════ 模块切换 ═══════ -->
-<div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('shop')">🛍️ 买源码</button>
-  <button class="tab-btn"        onclick="switchTab('order')">📝 接单定制</button>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!--  模块一：买源码                          -->
-<!-- ═══════════════════════════════════════ -->
-<div class="tab-content active" id="tab-shop">
-<div class="products">
-
-  <!-- 产品1：Unity2D蝙蝠横版闯关 -->
-  <div class="product-card">
-    <img class="product-img" src="https://placehold.co/520x360/2d6a4f/fff?text=蝙蝠横版闯关" alt="Unity2D蝙蝠横版闯关">
-    <div class="product-info">
-      <h2>Unity2D 蝙蝠横版闯关</h2>
-      <p class="desc">2D横版平台跳跃游戏。操控蝙蝠在洞穴中飞行，躲避障碍物、收集道具、击败Boss通关。包含完整关卡系统、计分排行、多道具机制。</p>
-      <div class="tags">
-        <span class="tag">Unity 2D</span><span class="tag">C#</span><span class="tag">横版闯关</span><span class="tag">完整项目</span>
-      </div>
-      <details class="video-wrap">
-        <summary>▶ 查看演示视频</summary>
-        <video controls poster="https://placehold.co/854x480/333/fff?text=演示视频"><source src="#" type="video/mp4">演示视频占位 — 替换为实际视频</video>
-      </details>
-      <div class="btn-row" style="margin-top:14px">
-        <a class="btn btn-cn" href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
-        <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 产品2：Unity3D平衡球移动 -->
-  <div class="product-card">
-    <img class="product-img" src="https://placehold.co/520x360/1677ff/fff?text=平衡球" alt="Unity3D平衡球移动">
-    <div class="product-info">
-      <h2>Unity3D 平衡球移动</h2>
-      <p class="desc">3D滚球平衡闯关游戏。通过键盘/重力感应操控球体，在悬空平台、斜坡、移动机关上保持平衡滚到终点。物理引擎真实反馈，多关卡递增难度。</p>
-      <div class="tags">
-        <span class="tag">Unity 3D</span><span class="tag">C#</span><span class="tag">物理引擎</span><span class="tag">平衡球</span>
-      </div>
-      <details class="video-wrap">
-        <summary>▶ 查看演示视频</summary>
-        <video controls poster="https://placehold.co/854x480/333/fff?text=演示视频"><source src="#" type="video/mp4">演示视频占位</video>
-      </details>
-      <div class="btn-row" style="margin-top:14px">
-        <a class="btn btn-cn" href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
-        <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 产品3：Cocos消消乐 -->
-  <div class="product-card">
-    <img class="product-img" src="https://placehold.co/520x360/e74c3c/fff?text=消消乐" alt="Cocos消消乐">
-    <div class="product-info">
-      <h2>Cocos 消消乐</h2>
-      <p class="desc">经典三消游戏，Cocos Creator 2.3.2 开发。包含棋盘匹配检测、连击Combo特效、得分系统、关卡递增难度。JS脚本，逻辑清晰易二次开发。</p>
-      <div class="tags">
-        <span class="tag">Cocos Creator</span><span class="tag">JavaScript</span><span class="tag">三消</span><span class="tag">完整项目</span>
-      </div>
-      <details class="video-wrap">
-        <summary>▶ 查看演示视频</summary>
-        <iframe src="//player.bilibili.com/player.html?bvid=BV1sBEm6tETe&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%;max-width:480px;height:270px;border-radius:8px"></iframe>
-      </details>
-      <div class="btn-row" style="margin-top:14px">
-        <a class="btn btn-cn" href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
-        <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 产品4：Cocos飞机大战 -->
-  <div class="product-card">
-    <img class="product-img" src="https://placehold.co/520x360/f39c12/fff?text=飞机大战" alt="Cocos飞机大战">
-    <div class="product-info">
-      <h2>Cocos 飞机大战</h2>
-      <p class="desc">经典飞机射击游戏，Cocos Creator 2.3.2 开发。玩家操控飞机发射子弹击毁敌机，包含多种敌机类型、道具掉落（火力升级/护盾/炸弹）、Boss战、分数排行榜。</p>
-      <div class="tags">
-        <span class="tag">Cocos Creator</span><span class="tag">JavaScript</span><span class="tag">射击</span><span class="tag">完整项目</span>
-      </div>
-      <details class="video-wrap">
-        <summary>▶ 查看演示视频</summary>
-        <video controls poster="https://placehold.co/854x480/333/fff?text=演示视频"><source src="#" type="video/mp4">演示视频占位</video>
-      </details>
-      <div class="btn-row" style="margin-top:14px">
-        <a class="btn btn-cn" href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
-        <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 产品4 -->
-  <div class="product-card">
-    <img class="product-img" src="https://placehold.co/520x360/8e44ad/fff?text=蝙蝠横版闯关" alt="蝙蝠横版闯关">
-    <div class="product-info">
-      <h2>蝙蝠横版闯关 — Unity 2D 完整源码</h2>
-      <p class="desc">2D横版跳跃闯关游戏。物理碰撞 + 关卡系统 + 得分系统 + 音效。Unity C#，可直接导出 WebGL/APK。</p>
-      <div class="tags">
-        <span class="tag">Unity C#</span><span class="tag">2D平台跳跃</span><span class="tag">横版闯关</span><span class="tag">完整项目</span>
-      </div>
-      <details class="video-wrap">
-        <summary>▶ 查看演示视频</summary>
-        <iframe src="//player.bilibili.com/player.html?bvid=BV1xMEg6pEtw&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%;max-width:480px;height:270px;border-radius:8px"></iframe>
-      </details>
-      <div class="price-row" style="margin-top:14px">
-        <span class="price">¥29</span>
-        <span class="price-old">¥49</span>
-      </div>
-      <div class="btn-row">
-        <a class="btn btn-cn"  href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
-        <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 产品5 -->
-  <div class="product-card">
-    <img class="product-img" src="https://placehold.co/520x360/3498db/fff?text=Unity 3D 平衡球" alt="平衡球">
-    <div class="product-info">
-      <h2>Unity 3D 平衡球 — 完整源码</h2>
-      <p class="desc">3D 物理滚球闯关游戏。重力控制 + 悬空平台 + 10关递增难度。Unity C#，完整项目可直接导出。</p>
-      <div class="tags">
-        <span class="tag">Unity C#</span><span class="tag">3D物理</span><span class="tag">滚球闯关</span><span class="tag">完整项目</span>
-      </div>
-      <details class="video-wrap">
-        <summary>▶ 查看演示视频</summary>
-        <iframe src="//player.bilibili.com/player.html?bvid=BV1cmEL6wEyR&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%;max-width:480px;height:270px;border-radius:8px"></iframe>
-      </details>
-      <div class="price-row" style="margin-top:14px">
-        <span class="price">¥79</span>
-        <span class="price-old">¥99</span>
-      </div>
-      <div class="btn-row">
-        <a class="btn btn-cn"  href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
-        <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 产品6 -->
-  <div class="product-card">
-    <img class="product-img" src="https://placehold.co/520x360/e67e22/fff?text=飞机大战" alt="飞机大战">
-    <div class="product-info">
-      <h2>飞机大战 — Unity 2D 完整源码</h2>
-      <p class="desc">经典飞行射击游戏。弹幕系统 + 敌机AI + 道具掉落 + 分数排行。Unity C#，完整项目可直接导出。</p>
-      <div class="tags">
-        <span class="tag">Unity C#</span><span class="tag">2D射击</span><span class="tag">飞机大战</span><span class="tag">完整项目</span>
-      </div>
-      <details class="video-wrap">
-        <summary>▶ 查看演示视频</summary>
-        <iframe src="//player.bilibili.com/player.html?bvid=BV11iEm6ZETS&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%;max-width:480px;height:270px;border-radius:8px"></iframe>
-      </details>
-      <div class="price-row" style="margin-top:14px">
-        <span class="price">¥19</span>
-        <span class="price-old">¥29</span>
-      </div>
-      <div class="btn-row">
-        <a class="btn btn-cn"  href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
-        <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
-      </div>
-    </div>
-  </div>
-
-</div>
-</div>
-
-<!-- ═══════════════════════════════════════ -->
-<!--  模块二：接单定制                        -->
-<!-- ═══════════════════════════════════════ -->
-<div class="tab-content" id="tab-order">
-<div class="order-section">
-
-  <div class="order-intro">
-    <h2>📝 告诉我你要什么，我来写</h2>
-    <p>Unity游戏 / Python工具 / 微信小程序 / AI应用 / 网站开发</p>
-  </div>
-
-  <!-- 技能标签 -->
-  <div class="skill-cards">
-    <div class="skill-card">
-      <div class="icon">🎮</div>
-      <h4>Unity 游戏开发</h4>
-      <p>2D/3D/微信小游戏</p>
-    </div>
-    <div class="skill-card">
-      <div class="icon">🐍</div>
-      <h4>Python 工具</h4>
-      <p>GUI工具/爬虫/自动化</p>
-    </div>
-    <div class="skill-card">
-      <div class="icon">🤖</div>
-      <h4>AI 应用</h4>
-      <p>DeepSeek/Gemini集成</p>
-    </div>
-    <div class="skill-card">
-      <div class="icon">📱</div>
-      <h4>微信小程序</h4>
-      <p>游戏/工具类小程序</p>
-    </div>
-    <div class="skill-card">
-      <div class="icon">🌐</div>
-      <h4>网站开发</h4>
-      <p>独立站/展示站</p>
-    </div>
-    <div class="skill-card">
-      <div class="icon">🔧</div>
-      <h4>代码修改/Bug修复</h4>
-      <p>已有项目维护</p>
-    </div>
-  </div>
-
-  <!-- 接单表单 -->
-  <div class="order-form-card">
-    <h3>📋 提交你的需求</h3>
-    <div class="form-group">
-      <label>需求类型</label>
-      <select id="reqType">
-        <option>Unity 游戏</option>
-        <option>Python 工具</option>
-        <option>微信小程序</option>
-        <option>AI 应用</option>
-        <option>网站开发</option>
-        <option>代码修改/Bug修复</option>
-        <option>其他（下方说明）</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>大致预算范围</label>
-      <select id="budget">
-        <option>¥500 以下</option>
-        <option>¥500 - 2000</option>
-        <option>¥2000 - 5000</option>
-        <option>¥5000 - 20000</option>
-        <option>¥20000 以上</option>
-        <option>面议</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>详细描述你的需求 <span style="color:var(--muted);font-weight:400">（越详细越好）</span></label>
-      <textarea id="reqDesc" placeholder="例如：我想要一个类似XX的功能，用Unity做，需要适配微信小游戏，大概包含A、B、C三个模块……"></textarea>
-    </div>
-    <div class="form-group">
-      <label>你的联系方式</label>
-      <input type="text" id="contactInfo" placeholder="微信号 / 手机号 / 邮箱">
-    </div>
-    <button class="btn btn-submit" onclick="submitOrder()">📨 提交需求</button>
-
-    <div class="order-contact-info">
-      或直接联系我：微信 <strong id="orderWx">YourWeChatID</strong><br>
-      <span style="font-size:.75rem;color:#bbb">24小时内回复，简单需求免费评估报价</span>
-    </div>
-  </div>
-
-</div>
-</div>
-
-<!-- ═══════ 购买弹窗（不变）═══════ -->
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <button class="modal-close" onclick="closeBuy()">✕</button>
-    <h3 id="modalTitle">购买</h3>
-    <div style="font-size:.875rem;color:var(--muted);margin-bottom:4px" id="modalPrice"></div>
-
-    <p class="warning">📱 请先添加微信 CharlsDM，备注「买代码」</p>
-
-    <div class="qr-row">
-      <div class="qr-box">
-        <img src="支付.jpg" alt="微信收款码" style="width:180px;height:180px;border:1px solid var(--border);border-radius:8px">
-        <p style="color:#07c160;margin-top:4px;font-weight:600">微信扫码支付</p>
-      </div>
-    </div>
-
-    <div style="margin:8px 0 4px;font-size:.8125rem;color:var(--muted)">您的订单号（转账时请备注）</div>
-    <div class="order-id" id="orderId">—</div>
-
-    <p style="font-size:.75rem;color:var(--muted);margin-top:4px">付款后截图 + 订单号一起发微信，确认到账即发下载链接</p>
-  </div>
-</div>
-
-<footer>
-  © 2025 阿德代码商店 · 所有源码均为原创 · 购买后永久使用
-</footer>
-
-<script>
-  // ═══════ 配置 ═══════
-  const YOUR_WECHAT = "CharlsDM";
-
-  // ═══════ 模块切换 ═══════
-  function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-    if (tab === 'shop') {
-      document.querySelector('.tab-btn:first-child').classList.add('active');
-      document.getElementById('tab-shop').classList.add('active');
-    } else {
-      document.querySelector('.tab-btn:last-child').classList.add('active');
-      document.getElementById('tab-order').classList.add('active');
-    }
-  }
-
-  // ═══════ 购买弹窗 ═══════
-  function openBuy(productName, price, productCode) {
-    const now = new Date();
-    const date = now.toISOString().slice(0,10).replace(/-/g,'');
-    const rand = Date.now().toString(36).slice(-4).toUpperCase() + Math.random().toString(36).substring(2,6).toUpperCase();
-    const orderId = `${productCode}-${date}-${rand}`;
-
-    document.getElementById('modalTitle').textContent = productName;
-    document.getElementById('modalPrice').textContent = `¥${price}`;
-    document.getElementById('orderId').textContent = orderId;
-
-    document.getElementById('overlay').classList.add('show');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeBuy() {
-    document.getElementById('overlay').classList.remove('show');
-    document.body.style.overflow = '';
-  }
-
-  document.getElementById('overlay').addEventListener('click', function(e) {
-    if (e.target === this) closeBuy();
-  });
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeBuy();
-  });
-
-  // ═══════ 接单提交 ═══════
-  function submitOrder() {
-    const type    = document.getElementById('reqType').value;
-    const budget  = document.getElementById('budget').value;
-    const desc    = document.getElementById('reqDesc').value.trim();
-    const contact = document.getElementById('contactInfo').value.trim();
-
-    if (!desc) { alert('请填写需求描述'); return; }
-    if (!contact) { alert('请填写联系方式'); return; }
-
-    // 构建一段文字，让用户复制发给你的微信
-    const text = 
-      `【定制需求】\n` +
-      `类型：${type}\n` +
-      `预算：${budget}\n` +
-      `需求：${desc}\n` +
-      `联系方式：${contact}`;
-
-    // 弹窗展示
-    alert('📋 请复制以下内容，微信发给 ' + YOUR_WECHAT + '：\n\n' + text);
-  }
-
-  // 初始化接单页的微信ID
-  document.getElementById('orderWx').textContent = YOUR_WECHAT;
-</script>
-
-</body>
-</html>
+     1|<!DOCTYPE html>
+     2|<html lang="zh-CN">
+     3|<head>
+     4|<meta charset="UTF-8">
+     5|<meta name="viewport" content="width=device-width, initial-scale=1.0">
+     6|<title>阿德代码商店</title>
+     7|<style>
+     8|  :root {
+     9|    --bg: #faf9f6;
+    10|    --card: #fff;
+    11|    --ink: #1a1a1a;
+    12|    --muted: #888;
+    13|    --accent: #07c160;
+    14|    --blue: #1677ff;
+    15|    --orange: #e67e22;
+    16|    --border: #e8e5df;
+    17|    --radius: 12px;
+    18|    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.06);
+    19|  }
+    20|  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    21|  body {
+    22|    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+    23|    background: var(--bg); color: var(--ink); line-height: 1.7;
+    24|    -webkit-font-smoothing: antialiased;
+    25|  }
+    26|
+    27|  nav {
+    28|    background: #fff; border-bottom: 1px solid var(--border);
+    29|    padding: 14px 24px; text-align: center; position: sticky; top: 0; z-index: 100;
+    30|  }
+    31|  nav .logo { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.5px; }
+    32|
+    33|  .hero {
+    34|    text-align: center; padding: 48px 20px 32px; max-width: 600px; margin: 0 auto;
+    35|  }
+    36|  .hero h1 { font-size: 1.75rem; margin-bottom: 8px; }
+    37|  .hero p { color: var(--muted); font-size: .9375rem; }
+    38|
+    39|  /* ── 模块切换标签 ── */
+    40|  .tab-bar {
+    41|    display: flex; justify-content: center; gap: 0;
+    42|    max-width: 400px; margin: 0 auto 32px; padding: 0 20px;
+    43|  }
+    44|  .tab-btn {
+    45|    flex: 1; padding: 12px 24px; border: 1.5px solid var(--border);
+    46|    background: #fff; font-size: .95rem; font-weight: 600; cursor: pointer;
+    47|    transition: all .15s; font-family: inherit; color: var(--muted);
+    48|  }
+    49|  .tab-btn:first-child { border-radius: 50px 0 0 50px; }
+    50|  .tab-btn:last-child  { border-radius: 0 50px 50px 0; }
+    51|  .tab-btn.active {
+    52|    background: var(--ink); color: #fff; border-color: var(--ink);
+    53|    position: relative; z-index: 1;
+    54|  }
+    55|
+    56|  /* ── 内容区 ── */
+    57|  .tab-content { display: none; }
+    58|  .tab-content.active { display: block; }
+    59|
+    60|  .products { max-width: 960px; margin: 0 auto; padding: 0 20px 60px; }
+    61|
+    62|  .product-card {
+    63|    background: var(--card); border: 1px solid var(--border);
+    64|    border-radius: var(--radius); box-shadow: var(--shadow);
+    65|    padding: 28px; margin-bottom: 24px;
+    66|    display: flex; gap: 24px; align-items: flex-start;
+    67|  }
+    68|  .product-img {
+    69|    width: 260px; height: 180px; border-radius: 8px; object-fit: cover;
+    70|    background: #f0f0f0; flex-shrink: 0;
+    71|  }
+    72|  .product-info { flex: 1; }
+    73|  .product-info h2 { font-size: 1.2rem; margin-bottom: 6px; }
+    74|  .product-info .desc { color: var(--muted); font-size: .9rem; margin-bottom: 12px; }
+    75|  .product-info .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    76|  .product-info .tag {
+    77|    background: #f0f0f0; padding: 3px 10px; border-radius: 20px;
+    78|    font-size: .75rem; color: var(--muted);
+    79|  }
+    80|
+    81|  .price-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    82|  .price { font-size: 1.5rem; font-weight: 700; color: #e74c3c; }
+    83|  .price-old { font-size: .875rem; color: #bbb; text-decoration: line-through; }
+    84|
+    85|  .btn {
+    86|    display: inline-flex; align-items: center; gap: 6px;
+    87|    padding: 10px 24px; border-radius: 50px; font-size: .9rem; font-weight: 600;
+    88|    cursor: pointer; border: none; transition: all .15s; text-decoration: none;
+    89|    font-family: inherit;
+    90|  }
+    91|  .btn-buy { background: var(--ink); color: #fff; }
+    92|  .btn-buy:hover { opacity: .85; transform: translateY(-1px); }
+    93|  .btn-cn  { background: var(--accent); color: #fff; }
+    94|  .btn-cn:hover  { opacity: .88; transform: translateY(-1px); }
+    95|  .btn-ovs { background: #5865f2; color: #fff; }
+    96|  .btn-ovs:hover { opacity: .88; transform: translateY(-1px); }
+    97|  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    98|
+    99|  .video-wrap { margin-top: 14px; }
+   100|  .video-wrap summary {
+   101|    cursor: pointer; color: var(--blue); font-size: .875rem; font-weight: 500;
+   102|  }
+   103|  .video-wrap video {
+   104|    width: 100%; max-width: 480px; border-radius: 8px; margin-top: 8px;
+   105|  }
+   106|
+   107|  /* ── 接单模块 ── */
+   108|  .order-section { max-width: 700px; margin: 0 auto; padding: 0 20px 60px; }
+   109|
+   110|  .order-intro {
+   111|    text-align: center; margin-bottom: 32px;
+   112|  }
+   113|  .order-intro h2 { font-size: 1.3rem; margin-bottom: 6px; }
+   114|  .order-intro p  { color: var(--muted); font-size: .9375rem; }
+   115|
+   116|  .skill-cards {
+   117|    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+   118|    gap: 14px; margin-bottom: 32px;
+   119|  }
+   120|  .skill-card {
+   121|    background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+   122|    padding: 18px; text-align: center; transition: all .15s;
+   123|  }
+   124|  .skill-card:hover { border-color: var(--orange); }
+   125|  .skill-card .icon { font-size: 1.75rem; margin-bottom: 6px; }
+   126|  .skill-card h4 { font-size: .9375rem; margin-bottom: 2px; }
+   127|  .skill-card p  { font-size: .8125rem; color: var(--muted); }
+   128|
+   129|  .order-form-card {
+   130|    background: #fff; border: 2px solid var(--orange);
+   131|    border-radius: var(--radius); box-shadow: var(--shadow);
+   132|    padding: 32px 28px;
+   133|  }
+   134|  .order-form-card h3 { margin-bottom: 20px; text-align: center; }
+   135|  .form-group { margin-bottom: 16px; }
+   136|  .form-group label {
+   137|    display: block; font-size: .875rem; font-weight: 600;
+   138|    margin-bottom: 6px;
+   139|  }
+   140|  .form-group input, .form-group textarea, .form-group select {
+   141|    width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
+   142|    border-radius: 8px; font-size: .9375rem; font-family: inherit;
+   143|    transition: border-color .15s; background: #fafafa;
+   144|  }
+   145|  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+   146|    outline: none; border-color: var(--orange); background: #fff;
+   147|  }
+   148|  .form-group textarea { resize: vertical; min-height: 100px; }
+   149|
+   150|  .btn-submit {
+   151|    width: 100%; background: var(--orange); color: #fff;
+   152|    padding: 14px; margin-top: 8px;
+   153|  }
+   154|  .btn-submit:hover { opacity: .9; }
+   155|
+   156|  .order-contact-info {
+   157|    margin-top: 20px; text-align: center; font-size: .875rem; color: var(--muted);
+   158|    padding-top: 16px; border-top: 1px solid var(--border);
+   159|  }
+   160|  .order-contact-info strong { color: var(--ink); }
+   161|
+   162|  /* ── 购买弹窗 ── */
+   163|  .overlay {
+   164|    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45);
+   165|    z-index: 200; justify-content: center; align-items: center;
+   166|    padding: 20px;
+   167|  }
+   168|  .overlay.show { display: flex; }
+   169|  .modal {
+   170|    background: #fff; border-radius: var(--radius); padding: 32px 28px;
+   171|    max-width: 420px; width: 100%; text-align: center; position: relative;
+   172|    animation: fadeUp .25s ease;
+   173|  }
+   174|  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } }
+   175|  .modal-close {
+   176|    position: absolute; top: 12px; right: 16px;
+   177|    background: none; border: none; font-size: 1.5rem; cursor: pointer;
+   178|    color: #bbb; line-height: 1;
+   179|  }
+   180|  .modal-close:hover { color: var(--ink); }
+   181|
+   182|  .modal h3 { margin-bottom: 4px; }
+   183|  .modal .order-id {
+   184|    background: #f5f5f5; padding: 8px 16px; border-radius: 6px;
+   185|    font-family: monospace; font-size: 1.1rem; letter-spacing: 2px;
+   186|    display: inline-block; margin: 12px 0;
+   187|  }
+   188|  .modal .warning {
+   189|    color: #e67e22; font-size: .8125rem; margin-bottom: 16px;
+   190|  }
+   191|  .qr-row { display: flex; gap: 16px; justify-content: center; margin-bottom: 8px; }
+   192|  .qr-box { text-align: center; }
+   193|  .qr-box img { width: 140px; height: 140px; border: 1px solid var(--border); border-radius: 8px; }
+   194|  .qr-box p { font-size: .8125rem; margin-top: 4px; font-weight: 600; }
+   195|
+   196|  .modal .contact {
+   197|    margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);
+   198|    font-size: .875rem; color: var(--muted);
+   199|  }
+   200|  .modal .contact strong { color: var(--ink); }
+   201|
+   202|  footer {
+   203|    text-align: center; padding: 32px 20px; border-top: 1px solid var(--border);
+   204|    font-size: .8125rem; color: var(--muted);
+   205|  }
+   206|
+   207|  @media (max-width: 640px) {
+   208|    .product-card { flex-direction: column; }
+   209|    .product-img { width: 100%; height: 200px; }
+   210|    .qr-row { flex-direction: column; align-items: center; }
+   211|    .skill-cards { grid-template-columns: repeat(2, 1fr); }
+   212|  }
+   213|</style>
+   214|</head>
+   215|<body>
+   216|
+   217|<nav><div class="logo">🛒 阿德代码商店</div></nav>
+   218|
+   219|<section class="hero">
+   220|  <h1>买源码，接定制，都在这</h1>
+   221|  <p>现成工具直接买，特殊需求找我写。Unity / Python / 小程序 / AI工具。</p>
+   222|</section>
+   223|
+   224|<!-- ═══════ 模块切换 ═══════ -->
+   225|<div class="tab-bar">
+   226|  <button class="tab-btn active" onclick="switchTab('shop')">🛍️ 买源码</button>
+   227|  <button class="tab-btn"        onclick="switchTab('order')">📝 接单定制</button>
+   228|</div>
+   229|
+   230|<!-- ═══════════════════════════════════════ -->
+   231|<!--  模块一：买源码                          -->
+   232|<!-- ═══════════════════════════════════════ -->
+   233|<div class="tab-content active" id="tab-shop">
+   234|<div class="products">
+   235|
+   236|  <!-- 产品1 -->
+   237|  <div class="product-card">
+   238|    <img class="product-img" src="https://placehold.co/520x360/2d6a4f/fff?text=AI+外贸开发信" alt="AI外贸开发信">
+   239|    <div class="product-info">
+   240|      <h2>AI 外贸开发信生成器</h2>
+   241|      <p class="desc">导入客户CSV → 自动爬取客户网站 → DeepSeek生成个性化开发信 + WhatsApp招呼。支持10+语种。</p>
+   242|      <div class="tags">
+   243|        <span class="tag">Python</span><span class="tag">Tkinter GUI</span><span class="tag">DeepSeek</span><span class="tag">外贸SOHO</span>
+   244|      </div>
+   245|      <details class="video-wrap">
+   246|        <summary>▶ 查看演示视频</summary>
+   247|        <video controls poster="https://placehold.co/854x480/333/fff?text=演示视频"><source src="#" type="video/mp4">演示视频占位 — 替换为实际视频</video>
+   248|      </details>
+   249|      <div class="price-row" style="margin-top:14px">
+   250|        <span class="price">¥69</span>
+   251|        <span class="price-old">¥99</span>
+   252|      </div>
+   253|      <div class="btn-row">
+   254|        <a class="btn btn-cn"  href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
+   255|        <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
+   256|      </div>
+   257|    </div>
+   258|  </div>
+   259|
+   260|  <!-- 产品2 -->
+   261|  <div class="product-card">
+   262|    <img class="product-img" src="https://placehold.co/520x360/1677ff/fff?text=AI+客户搜索" alt="AI客户搜索">
+   263|    <div class="product-info">
+   264|      <h2>AI 外贸客户搜索工具</h2>
+   265|      <p class="desc">SerpAPI搜索 + 网站爬虫 + 客户质量自动评分。输入关键词，导出潜在客户列表。</p>
+   266|      <div class="tags">
+   267|        <span class="tag">Python</span><span class="tag">Tkinter GUI</span><span class="tag">SerpAPI</span><span class="tag">客户开发</span>
+   268|      </div>
+   269|      <details class="video-wrap">
+   270|        <summary>▶ 查看演示视频</summary>
+   271|        <video controls poster="https://placehold.co/854x480/333/fff?text=演示视频"><source src="#" type="video/mp4">演示视频占位</video>
+   272|      </details>
+   273|      <div class="price-row" style="margin-top:14px">
+   274|        <span class="price">¥99</span>
+   275|        <span class="price-old">¥149</span>
+   276|      </div>
+   277|      <div class="btn-row">
+   278|        <a class="btn btn-cn"  href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
+   279|        <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
+   280|      </div>
+   281|    </div>
+   282|  </div>
+   283|
+   284|  <!-- 产品3 -->
+   285|  <div class="product-card">
+   286|    <img class="product-img" src="https://placehold.co/520x360/e74c3c/fff?text=叠叠消消乐源码" alt="叠叠消消乐">
+   287|    <div class="product-info">
+   288|      <h2>叠叠消消乐 — Unity 完整源码</h2>
+   289|      <p class="desc">微信小游戏横屏三消卡牌游戏。10关递增难度 + 连击系统 + 道具（撤回/洗牌）。Unity 2022.3，WX-WASM-SDK-V2 适配。</p>
+   290|      <div class="tags">
+   291|        <span class="tag">Unity C#</span><span class="tag">微信小游戏</span><span class="tag">三消</span><span class="tag">完整项目</span>
+   292|      </div>
+   293|      <details class="video-wrap">
+   294|        <summary>▶ 查看演示视频</summary>
+   295|        <iframe src="https://player.bilibili.com/player.html?bvid=BV1sBEm6tETe&page=1" frameborder="0" allowfullscreen style="width:100%;max-width:480px;height:270px;border-radius:8px"></iframe>
+   296|      </details>
+   297|      <div class="price-row" style="margin-top:14px">
+   298|        <span class="price">¥199</span>
+   299|        <span class="price-old">¥299</span>
+   300|      </div>
+   301|      <div class="btn-row">
+   302|        <a class="btn btn-cn"  href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
+   303|        <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
+   304|      </div>
+   305|    </div>
+   306|  </div>
+   307|
+   308|  <!-- 产品4 -->
+   309|  <div class="product-card">
+   310|    <img class="product-img" src="https://placehold.co/520x360/8e44ad/fff?text=蝙蝠横版闯关" alt="蝙蝠横版闯关">
+   311|    <div class="product-info">
+   312|      <h2>蝙蝠横版闯关 — Unity 2D 完整源码</h2>
+   313|      <p class="desc">2D横版跳跃闯关游戏。物理碰撞 + 关卡系统 + 得分系统 + 音效。Unity C#，可直接导出 WebGL/APK。</p>
+   314|      <div class="tags">
+   315|        <span class="tag">Unity C#</span><span class="tag">2D平台跳跃</span><span class="tag">横版闯关</span><span class="tag">完整项目</span>
+   316|      </div>
+   317|      <details class="video-wrap">
+   318|        <summary>▶ 查看演示视频</summary>
+   319|        <iframe src="https://player.bilibili.com/player.html?bvid=BV1xMEg6pEtw&page=1" frameborder="0" allowfullscreen style="width:100%;max-width:480px;height:270px;border-radius:8px"></iframe>
+   320|      </details>
+   321|      <div class="price-row" style="margin-top:14px">
+   322|        <span class="price">¥29</span>
+   323|        <span class="price-old">¥49</span>
+   324|      </div>
+   325|      <div class="btn-row">
+   326|        <a class="btn btn-cn"  href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
+   327|        <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
+   328|      </div>
+   329|    </div>
+   330|  </div>
+   331|
+   332|  <!-- 产品5 -->
+   333|  <div class="product-card">
+   334|    <img class="product-img" src="https://placehold.co/520x360/3498db/fff?text=Unity 3D 平衡球" alt="平衡球">
+   335|    <div class="product-info">
+   336|      <h2>Unity 3D 平衡球 — 完整源码</h2>
+   337|      <p class="desc">3D 物理滚球闯关游戏。重力控制 + 悬空平台 + 10关递增难度。Unity C#，完整项目可直接导出。</p>
+   338|      <div class="tags">
+   339|        <span class="tag">Unity C#</span><span class="tag">3D物理</span><span class="tag">滚球闯关</span><span class="tag">完整项目</span>
+   340|      </div>
+   341|      <details class="video-wrap">
+   342|        <summary>▶ 查看演示视频</summary>
+   343|        <iframe src="https://player.bilibili.com/player.html?bvid=BV1cmEL6wEyR&page=1" frameborder="0" allowfullscreen style="width:100%;max-width:480px;height:270px;border-radius:8px"></iframe>
+   344|      </details>
+   345|      <div class="price-row" style="margin-top:14px">
+   346|        <span class="price">¥79</span>
+   347|        <span class="price-old">¥99</span>
+   348|      </div>
+   349|      <div class="btn-row">
+   350|        <a class="btn btn-cn"  href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
+   351|        <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
+   352|      </div>
+   353|    </div>
+   354|  </div>
+   355|
+   356|  <!-- 产品6 -->
+   357|  <div class="product-card">
+   358|    <img class="product-img" src="https://placehold.co/520x360/e67e22/fff?text=飞机大战" alt="飞机大战">
+   359|    <div class="product-info">
+   360|      <h2>飞机大战 — Unity 2D 完整源码</h2>
+   361|      <p class="desc">经典飞行射击游戏。弹幕系统 + 敌机AI + 道具掉落 + 分数排行。Unity C#，完整项目可直接导出。</p>
+   362|      <div class="tags">
+   363|        <span class="tag">Unity C#</span><span class="tag">2D射击</span><span class="tag">飞机大战</span><span class="tag">完整项目</span>
+   364|      </div>
+   365|      <details class="video-wrap">
+   366|        <summary>▶ 查看演示视频</summary>
+   367|        <iframe src="https://player.bilibili.com/player.html?bvid=BV11iEm6ZETS&page=1" frameborder="0" allowfullscreen style="width:100%;max-width:480px;height:270px;border-radius:8px"></iframe>
+   368|      </details>
+   369|      <div class="price-row" style="margin-top:14px">
+   370|        <span class="price">¥19</span>
+   371|        <span class="price-old">¥29</span>
+   372|      </div>
+   373|      <div class="btn-row">
+   374|        <a class="btn btn-cn"  href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
+   375|        <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
+   376|      </div>
+   377|    </div>
+   378|  </div>
+   379|
+   380|</div>
+   381|</div>
+   382|
+   383|<!-- ═══════════════════════════════════════ -->
+   384|<!--  模块二：接单定制                        -->
+   385|<!-- ═══════════════════════════════════════ -->
+   386|<div class="tab-content" id="tab-order">
+   387|<div class="order-section">
+   388|
+   389|  <div class="order-intro">
+   390|    <h2>📝 告诉我你要什么，我来写</h2>
+   391|    <p>Unity游戏 / Python工具 / 微信小程序 / AI应用 / 网站开发</p>
+   392|  </div>
+   393|
+   394|  <!-- 技能标签 -->
+   395|  <div class="skill-cards">
+   396|    <div class="skill-card">
+   397|      <div class="icon">🎮</div>
+   398|      <h4>Unity 游戏开发</h4>
+   399|      <p>2D/3D/微信小游戏</p>
+   400|    </div>
+   401|    <div class="skill-card">
+   402|      <div class="icon">🐍</div>
+   403|      <h4>Python 工具</h4>
+   404|      <p>GUI工具/爬虫/自动化</p>
+   405|    </div>
+   406|    <div class="skill-card">
+   407|      <div class="icon">🤖</div>
+   408|      <h4>AI 应用</h4>
+   409|      <p>DeepSeek/Gemini集成</p>
+   410|    </div>
+   411|    <div class="skill-card">
+   412|      <div class="icon">📱</div>
+   413|      <h4>微信小程序</h4>
+   414|      <p>游戏/工具类小程序</p>
+   415|    </div>
+   416|    <div class="skill-card">
+   417|      <div class="icon">🌐</div>
+   418|      <h4>网站开发</h4>
+   419|      <p>独立站/展示站</p>
+   420|    </div>
+   421|    <div class="skill-card">
+   422|      <div class="icon">🔧</div>
+   423|      <h4>代码修改/Bug修复</h4>
+   424|      <p>已有项目维护</p>
+   425|    </div>
+   426|  </div>
+   427|
+   428|  <!-- 接单表单 -->
+   429|  <div class="order-form-card">
+   430|    <h3>📋 提交你的需求</h3>
+   431|    <div class="form-group">
+   432|      <label>需求类型</label>
+   433|      <select id="reqType">
+   434|        <option>Unity 游戏</option>
+   435|        <option>Python 工具</option>
+   436|        <option>微信小程序</option>
+   437|        <option>AI 应用</option>
+   438|        <option>网站开发</option>
+   439|        <option>代码修改/Bug修复</option>
+   440|        <option>其他（下方说明）</option>
+   441|      </select>
+   442|    </div>
+   443|    <div class="form-group">
+   444|      <label>大致预算范围</label>
+   445|      <select id="budget">
+   446|        <option>¥500 以下</option>
+   447|        <option>¥500 - 2000</option>
+   448|        <option>¥2000 - 5000</option>
+   449|        <option>¥5000 - 20000</option>
+   450|        <option>¥20000 以上</option>
+   451|        <option>面议</option>
+   452|      </select>
+   453|    </div>
+   454|    <div class="form-group">
+   455|      <label>详细描述你的需求 <span style="color:var(--muted);font-weight:400">（越详细越好）</span></label>
+   456|      <textarea id="reqDesc" placeholder="例如：我想要一个类似XX的功能，用Unity做，需要适配微信小游戏，大概包含A、B、C三个模块……"></textarea>
+   457|    </div>
+   458|    <div class="form-group">
+   459|      <label>你的联系方式</label>
+   460|      <input type="text" id="contactInfo" placeholder="微信号 / 手机号 / 邮箱">
+   461|    </div>
+   462|    <button class="btn btn-submit" onclick="submitOrder()">📨 提交需求</button>
+   463|
+   464|    <div class="order-contact-info">
+   465|      或直接联系我：微信 <strong id="orderWx">YourWeChatID</strong><br>
+   466|      <span style="font-size:.75rem;color:#bbb">24小时内回复，简单需求免费评估报价</span>
+   467|    </div>
+   468|  </div>
+   469|
+   470|</div>
+   471|</div>
+   472|
+   473|<!-- ═══════ 购买弹窗（不变）═══════ -->
+   474|<div class="overlay" id="overlay">
+   475|  <div class="modal">
+   476|    <button class="modal-close" onclick="closeBuy()">✕</button>
+   477|    <h3 id="modalTitle">购买</h3>
+   478|    <div style="font-size:.875rem;color:var(--muted);margin-bottom:4px" id="modalPrice"></div>
+   479|
+   480|    <p class="warning">📱 请先添加微信 CharlsDM，备注「买代码」</p>
+   481|
+   482|    <div class="qr-row">
+   483|      <div class="qr-box">
+   484|        <img src="支付.jpg" alt="微信收款码" style="width:180px;height:180px;border:1px solid var(--border);border-radius:8px">
+   485|        <p style="color:#07c160;margin-top:4px;font-weight:600">微信扫码支付</p>
+   486|      </div>
+   487|    </div>
+   488|
+   489|    <div style="margin:8px 0 4px;font-size:.8125rem;color:var(--muted)">您的订单号（转账时请备注）</div>
+   490|    <div class="order-id" id="orderId">—</div>
+   491|
+   492|    <p style="font-size:.75rem;color:var(--muted);margin-top:4px">付款后截图 + 订单号一起发微信，确认到账即发下载链接</p>
+   493|  </div>
+   494|</div>
+   495|
+   496|<footer>
+   497|  © 2025 阿德代码商店 · 所有源码均为原创 · 购买后永久使用
+   498|</footer>
+   499|
+   500|<script>
+   501|
