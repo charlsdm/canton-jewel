@@ -172,7 +172,7 @@
         <iframe src="https://player.bilibili.com/player.html?bvid=BV1sBEm6tETe&page=1" frameborder="0" allowfullscreen style="width:100%;max-width:480px;height:270px;border-radius:8px"></iframe>
       </details>
       <div class="btn-row">
-        <a class="btn btn-cn" href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
+        <a class="btn btn-cn" href="#" onclick="showWechatBuy(event)">🇨🇳 国内购买</a>
         <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
       </div>
     </div>
@@ -191,7 +191,7 @@
         <iframe src="https://player.bilibili.com/player.html?bvid=BV1xMEg6pEtw&page=1" frameborder="0" allowfullscreen style="width:100%;max-width:480px;height:270px;border-radius:8px"></iframe>
       </details>
       <div class="btn-row">
-        <a class="btn btn-cn" href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
+        <a class="btn btn-cn" href="#" onclick="showWechatBuy(event)">🇨🇳 国内购买</a>
         <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
       </div>
     </div>
@@ -210,7 +210,7 @@
         <iframe src="https://player.bilibili.com/player.html?bvid=BV1cmEL6wEyR&page=1" frameborder="0" allowfullscreen style="width:100%;max-width:480px;height:270px;border-radius:8px"></iframe>
       </details>
       <div class="btn-row">
-        <a class="btn btn-cn" href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
+        <a class="btn btn-cn" href="#" onclick="showWechatBuy(event)">🇨🇳 国内购买</a>
         <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
       </div>
     </div>
@@ -229,7 +229,7 @@
         <iframe src="https://player.bilibili.com/player.html?bvid=BV11iEm6ZETS&page=1" frameborder="0" allowfullscreen style="width:100%;max-width:480px;height:270px;border-radius:8px"></iframe>
       </details>
       <div class="btn-row">
-        <a class="btn btn-cn" href="https://mbd.pub" target="_blank">🇨🇳 国内购买</a>
+        <a class="btn btn-cn" href="#" onclick="showWechatBuy(event)">🇨🇳 国内购买</a>
         <a class="btn btn-ovs" href="https://itch.io" target="_blank">🌍 Overseas Buy</a>
       </div>
     </div>
@@ -313,6 +313,15 @@ function switchTab(tab) {
     document.querySelector('.tab-btn:last-child').classList.add('active');
     document.getElementById('tab-order').classList.add('active');
   }
+}
+function showWechatBuy(e) {
+  e.preventDefault();
+  document.getElementById('modalTitle').textContent = '购买源码';
+  document.getElementById('orderId').style.display = 'none';
+  document.getElementById('orderId').previousElementSibling.style.display = 'none';
+  document.querySelector('#overlay .warning').textContent = '📱 购买请添加微信：CharlsDM';
+  document.getElementById('overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
 }
 function openBuy(name, price, code) {
   var d = new Date().toISOString().slice(0,10).replace(/-/g,'');
