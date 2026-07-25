@@ -86,7 +86,7 @@ def chat_with_ai(user_message, history=None):
             "Content-Type": "application/json"
         },
         json={
-            "model": "deepseek-chat",
+            "model": "deepseek-v4-pro",
             "messages": messages,
             "temperature": 0.7,
             "max_tokens": 500
