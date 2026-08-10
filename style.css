@@ -156,6 +156,68 @@ section { padding: 80px 0; }
 .material-card h3 { color: var(--gold); margin-bottom: 8px; }
 .material-card p { color: var(--text-muted); font-size: 0.9rem; }
 
+/* ===== Customer Cases ===== */
+.testimonials { background: var(--bg-card); }
+.testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 32px; }
+
+.testimonial-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; transition: border-color 0.3s;
+}
+.testimonial-card:hover { border-color: var(--gold); }
+
+.testimonial-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 20px 24px 0; border-bottom: none;
+}
+.testimonial-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--dark-2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+}
+.testimonial-meta h4 { font-family: var(--font-sans); font-size: 0.9rem; color: var(--white); margin-bottom: 2px; }
+.testimonial-meta span { font-size: 0.75rem; color: var(--text-muted); }
+
+.testimonial-chat {
+    padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 10px;
+    font-size: 0.85rem; line-height: 1.6;
+}
+.chat-bubble {
+    max-width: 82%; padding: 10px 14px; border-radius: 12px;
+    position: relative; word-break: break-word;
+}
+.chat-bubble.client {
+    align-self: flex-start;
+    background: #2A2A2A; color: #ddd;
+    border-bottom-left-radius: 4px;
+}
+.chat-bubble.us {
+    align-self: flex-end;
+    background: #1b3a2d; color: #e0f0e8;
+    border-bottom-right-radius: 4px;
+    text-align: right;
+}
+.chat-bubble.highlight {
+    align-self: flex-start;
+    background: #1e1e1e; color: #ddd;
+    border-left: 3px solid var(--gold);
+    padding-left: 16px; max-width: 100%;
+}
+.chat-bubble .time {
+    display: block; font-size: 0.7rem; color: var(--text-muted);
+    margin-top: 4px; text-align: right;
+}
+.chat-bubble .emoji { font-size: 0.8rem; }
+
+.testimonial-footer {
+    padding: 16px 24px 20px; border-top: 1px solid var(--border);
+    color: var(--text-muted); font-size: 0.8rem;
+    display: flex; align-items: center; gap: 8px;
+}
+.testimonial-footer .flag { font-size: 1.2rem; }
+
 /* ===== CTA ===== */
 .cta { background: linear-gradient(rgba(13,13,13,0.9), rgba(13,13,13,0.9)), var(--bg-card); text-align: center; }
 .cta h2 { margin-bottom: 12px; }
