@@ -89,7 +89,7 @@ h3 { font-size: 1.25rem; }
     min-height: 90vh; display: flex; align-items: center; justify-content: center;
     text-align: center; padding: 120px 24px 80px;
     background: linear-gradient(rgba(13,13,13,0.5), rgba(13,13,13,0.85)),
-                url('images/hero-bg.png') center/cover no-repeat;
+                url('images/hero-bg.webp') center/cover no-repeat;
 }
 .hero-tag { color: var(--gold); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 16px; }
 .hero-sub { color: var(--text-muted); font-size: 1.05rem; max-width: 560px; margin: 16px auto 32px; }
